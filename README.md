@@ -1,2 +1,2 @@
 # legal-express
-A law practice management web app
+A legal practice management web app
