@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each caseobj in caseobj_list    
+      li
+        a(href=caseobj.url) #{caseobj.name}
+        |  | 
+        a(href=caseobj.client.url) #{caseobj.client.name}
+    else
+      li There are no cases.

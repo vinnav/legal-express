@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h2= task.description
+  div(style='margin-left:20px;margin-top:20px')
+    p #[strong Case:] 
+      a(href=task.caseobj.url) #{task.caseobj.name}
+    p #[strong Status:] 
+      if task.status=='Done'
+        span.text-success #{task.status}
+      else if task.status=='Ongoing'
+        span.text-warning #{task.status} - 
+      else if task.status=='To do'
+        span.text-danger #{task.status} - 
+      if task.status!='Done'
+        span.text-danger #{task.due_formatted}

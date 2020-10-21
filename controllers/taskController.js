@@ -1,13 +1,31 @@
 var Task = require('../models/task');
 
 // Display list of all tasks.
-exports.task_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: task list');
+exports.task_list = function(req, res, next) {
+    Task.find()
+        .populate('caseobj')
+        .exec(function(err, list_tasks){
+            if(err){return next(err);}
+            //Successful, so render
+            res.render('task_list', {title: 'Tasks', task_list: list_tasks})
+        })
 };
 
 // Display detail page for a specific task.
-exports.task_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: task detail: ' + req.params.id);
+exports.task_detail = function(req, res, next) {
+
+    Task.findById(req.params.id)
+    .populate('caseobj')
+    .exec(function (err, task) {
+      if (err) { return next(err); }
+      if (task==null) { // No results.
+          var err = new Error('Task not found');
+          err.status = 404;
+          return next(err);
+        }
+      // Successful, so render.
+      res.render('task_detail', { title: 'Task: ', task: task});
+    })
 };
 
 // Display task create form on GET.

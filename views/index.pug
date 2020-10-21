@@ -1,5 +1,18 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #[em Legal Express], a very basic law practice management web app.
+  p Welcome to #[strong Legal Express], a very basic legal practice management web app.
+
+  h3 Dynamic content
+
+  if error
+    p Error getting dynamic content.
+  else
+    p Legal Express has the following record counts:
+
+    ul
+      li #[strong Cases:] !{data.caseobj_count}
+      li #[strong Tasks:] !{data.task_count}
+      li #[strong Tasks to do:] !{data.task_todo_count} 
+      li #[strong Peoples:] !{data.person_count}
+      li #[strong Practice Areas:] !{data.practicearea_count}

@@ -1,13 +1,40 @@
 var Person = require('../models/person');
+var async = require('async');
+var Caseobj = require('../models/caseobj');
+const person = require('../models/person');
 
 // Display list of all persons.
-exports.person_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: Person list');
+exports.person_list = function(req, res, next) {
+    Person.find()
+        .sort([['last_name', 'ascending']])
+        .exec(function(err, list_persons){
+            if(err){return next(err);}
+            //Successful, so render
+            res.render('person_list', {title: 'Persons', person_list: list_persons});
+        });
 };
 
 // Display detail page for a specific person.
 exports.person_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: person detail: ' + req.params.id);
+    async.parallel({
+        person: function(callback) {
+            Person.findById(req.params.id)
+                .exec(callback)
+        },
+        person_caseobj: function(callback){
+            Caseobj.find({$or:[{'client':req.params.id},{'lawyer':req.params.id},{'claimant':req.params.id},{'defendant':req.params.id}]}, 'name summary')
+            .exec(callback)
+        },
+    }, function(err, results){
+        if(err){return next(err);}
+        if(results.person==null){
+            var err = new Error('Person not found');
+            err.status = 404;
+            return next(err);
+        }
+        //Successful, so render
+        res.render('person_detail',{title: 'Person Detail', person: results.person, person_caseobj: results.person_caseobj});
+    });
 };
 
 // Display person create form on GET.

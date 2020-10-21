@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each practicearea in practicearea_list    
+      li
+        a(href=practicearea.url) #{practicearea.name}
+    else
+      li There are no practice area.

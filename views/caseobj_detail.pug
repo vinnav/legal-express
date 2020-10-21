@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h1 Case: #{caseobj.name}
+          
+  p #[strong Client:] 
+    a(href=caseobj.client.url) #{caseobj.client.name}
+  p #[strong Practice Area:] 
+    a(href=caseobj.practicearea.url) #{caseobj.practicearea.name} 
+  p #[strong Parties:] 
+    a(href=caseobj.claimant.url) #{caseobj.claimant.name}
+    |  v. 
+    a(href=caseobj.defendant.url) #{caseobj.defendant.name}
+  p #[strong Lawyer:] 
+    a(href=caseobj.lawyer.url) #{caseobj.lawyer.name}
+  p #[strong Summary:] #{caseobj.summary}  
+  div(style='margin-left:20px;margin-top:20px')
+    h4 Tasks
+    for task in caseobj_task
+      li
+        if task.status=='Done'
+          span.text-success #{task.status} - 
+        else if task.status=='Ongoing'
+          span.text-warning #{task.status} - 
+        else if task.status=='To do'
+          span.text-danger #{task.status} - 
+        if task.status!='Done'
+          span.text-danger #{task.due_formatted} - 
+        a(href=task.url) #{task.description}
+    else
+        li There are no tasks.

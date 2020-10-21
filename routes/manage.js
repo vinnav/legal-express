@@ -34,7 +34,7 @@ router.post('/caseobj/:id/update', caseobj_controller.caseobj_update_post);
 router.get('/caseobj/:id', caseobj_controller.caseobj_detail);
 
 // GET request for list of all caseobj items.
-router.get('/caseobjs', caseobj_controller.caseobj_list);
+router.get('/casesobj', caseobj_controller.caseobj_list);
 
 /// PERSON ROUTES ///
 

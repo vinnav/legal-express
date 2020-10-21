@@ -1,0 +1,18 @@
+extends layout
+
+block content
+
+  h1= person.name
+  
+  p #[strong Phone:] #{person.contact_phone}
+  p #[strong Email:] #{person.contact_mail}
+  
+  div(style='margin-left:20px;margin-top:20px')
+    h4 Cases
+    dl
+      each caseobj in person_caseobj
+        a(href=caseobj.url) #{caseobj.name}
+        p #{caseobj.summary}
+
+      else
+        p This person has no cases.

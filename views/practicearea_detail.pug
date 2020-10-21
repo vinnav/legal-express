@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1 Practice Area: #{practicearea.name}
+  
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Cases
+    dl
+      each caseobj in practicearea_caseobj
+        dt 
+          a(href=caseobj.url) #{caseobj.name}
+          |  - 
+          each person in practicearea_person
+            if person.id == caseobj.client
+              a(href=person.url) #{person.name}
+        dd #{caseobj.summary}
+
+      else
+        p This practice area has no cases
+        a(href="/manage/practiceareas") Go back
