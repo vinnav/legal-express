@@ -1,0 +1,74 @@
+extends layout
+
+block content
+  h1= title
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='name') Case name:
+      input#name.form-control(type='text', placeholder='Case name' name='name' required='true' value=(undefined===caseobj ? '' : caseobj.name) )
+    div.form-group
+      label(for='client') Client:
+      select#client.form-control(type='select', placeholder='Select client' name='client' required='true' )
+        - persons.sort(function(a, b) {let textA = a.last_name.toUpperCase(); let textB = b.last_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for person in persons
+          if caseobj
+            option(value=person._id selected=(person._id.toString()==caseobj.person ? 'selected' : false) ) #{person.name}
+          else
+            option(value=person._id) #{person.name}
+    div.form-group        
+      label(for='practicearea') Practice Area:
+      select#practicearea.form-control(type='select', name='practicearea' required='true' )
+        - practiceareas.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for practicearea in practiceareas
+          if caseobj
+            option(value=practicearea._id selected=(practicearea._id.toString()==caseobj.practicearea ? 'selected' : false) ) #{practicearea.name}
+          else
+            option(value=practicearea._id) #{practicearea.name}
+    div.form-group
+      label(for='jurisdiction') Jurisdiction:
+      input#jurisdiction.form-control(type='text', placeholder='London, New York...' name='jurisdiction' required='true' value=(undefined===caseobj ? '' : caseobj.jurisdiction) )
+    div.form-group        
+      label(for='status') Status:
+      select#status.form-control(type='select', name='status' required='true' )
+        option(value="Ongoing") Ongoing
+        option(value="Archived") Archived
+        option(value="Maintenance") Maintenance
+    br
+    div.form-group
+      label(for='claimant') Claimant:
+      select#claimant.form-control(type='select', placeholder='Select claimant' name='claimant' required='true' )
+        - persons.sort(function(a, b) {let textA = a.last_name.toUpperCase(); let textB = b.last_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for person in persons
+          if caseobj
+            option(value=person._id selected=(person._id.toString()==caseobj.person ? 'selected' : false) ) #{person.name}
+          else
+            option(value=person._id) #{person.name}
+    div.form-group
+      label(for='defendant') Defendant:
+      select#defendant.form-control(type='select', placeholder='Select defendant' name='defendant' required='true' )
+        - persons.sort(function(a, b) {let textA = a.last_name.toUpperCase(); let textB = b.last_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for person in persons
+          if caseobj
+            option(value=person._id selected=(person._id.toString()==caseobj.person ? 'selected' : false) ) #{person.name}
+          else
+            option(value=person._id) #{person.name}
+    div.form-group
+      label(for='lawyer') Lawyer:
+      select#lawyer.form-control(type='select', placeholder='Select lawyer' name='lawyer' required='true' )
+        - persons.sort(function(a, b) {let textA = a.last_name.toUpperCase(); let textB = b.last_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for person in persons
+          if caseobj
+            option(value=person._id selected=(person._id.toString()==caseobj.person ? 'selected' : false) ) #{person.name}
+          else
+            option(value=person._id) #{person.name}
+    br
+    div.form-group
+      label(for='summary') Summary:
+      textarea#summary.form-control(type='textarea', placeholder='Summary' name='summary' required='true') #{undefined===caseobj ? '' : caseobj.summary}
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg

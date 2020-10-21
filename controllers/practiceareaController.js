@@ -2,7 +2,7 @@ var Practicearea = require('../models/practicearea');
 var Caseobj = require('../models/caseobj');
 var Person = require('../models/person')
 var async = require('async');
-const practicearea = require('../models/practicearea');
+const { body,validationResult } = require("express-validator");
 
 // Display list of all practicearea.
 exports.practicearea_list = function(req, res, next) {
@@ -19,7 +19,7 @@ exports.practicearea_list = function(req, res, next) {
 exports.practicearea_detail = function(req, res, next) {
     async.parallel({
         practicearea: function(callback) {
-            practicearea.findById(req.params.id)
+            Practicearea.findById(req.params.id)
                 .exec(callback)
         },
 
@@ -45,14 +45,54 @@ exports.practicearea_detail = function(req, res, next) {
 };
 
 // Display practicearea create form on GET.
-exports.practicearea_create_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: practice area create GET');
+exports.practicearea_create_get = function(req, res, next) {
+    res.render('practicearea_form', {title: 'Create practice area'});
 };
 
 // Handle practicearea create on POST.
-exports.practicearea_create_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: practice area create POST');
-};
+exports.practicearea_create_post =   [
+   
+    // Validate and sanitise the name field.
+    body('name', 'Practice area name required').trim().isLength({ min: 1 }).escape(),
+  
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+  
+          // Extract the validation errors from a request.
+        const errors = validationResult(req);
+
+        // Create a genre object with escaped and trimmed data.
+        var practicearea = new Practicearea(
+        { name: req.body.name }
+        );
+
+  
+        if (!errors.isEmpty()) {
+            // There are errors. Render the form again with sanitized values/error messages.
+            res.render('practicearea_form', { title: 'Create practice area', practicearea: practicearea, errors: errors.array()});
+            return;
+        }
+        else {
+            // Data from form is valid.
+            // Check if Genre with same name already exists.
+            Practicearea.findOne({ 'name': req.body.name })
+                .exec( function(err, found_practicearea) {
+                    if (err) { return next(err); }
+                    if (found_practicearea) {
+                        // Genre exists, redirect to its detail page.
+                        res.redirect(found_practicearea.url);
+                    }
+                    else {
+                        practicearea.save(function (err) {
+                            if (err) { return next(err); }
+                            // Genre saved. Redirect to genre detail page.
+                            res.redirect(practicearea.url);
+                        });
+                    }
+                });
+        }
+    }
+];
 
 // Display practicearea delete form on GET.
 exports.practicearea_delete_get = function(req, res) {

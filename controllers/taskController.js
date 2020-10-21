@@ -1,4 +1,6 @@
 var Task = require('../models/task');
+var Caseobj = require('../models/caseobj');
+const {body,validationResult} = require('express-validator');
 
 // Display list of all tasks.
 exports.task_list = function(req, res, next) {
@@ -29,14 +31,57 @@ exports.task_detail = function(req, res, next) {
 };
 
 // Display task create form on GET.
-exports.task_create_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: task create GET');
+exports.task_create_get = function(req, res, next) {
+    Caseobj.find({},'name client')
+    .populate('client')
+    .exec(function (err, caseobjs) {
+      if (err) { return next(err); }
+      // Successful, so render.
+      res.render('task_form', {title: 'Create Task', caseobj_list: caseobjs});
+    });    
 };
 
 // Handle task create on POST.
-exports.task_create_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: task create POST');
-};
+exports.task_create_post = [
+
+    // Validate and sanitise fields.
+    body('description', 'Description must be specified').trim().isLength({ min: 1 }).escape(),
+    body('due', 'Invalid date').isISO8601().toDate(),
+    
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+
+        // Create a BookInstance object with escaped and trimmed data.
+        var task = new Task(
+          { caseobj: req.body.caseobj,
+            description: req.body.description,
+            status: req.body.status,
+            due: req.body.due
+           });
+
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values and error messages.
+            Task.find({},'description')
+                .exec(function (err, caseobj) {
+                    if (err) { return next(err); }
+                    // Successful, so render.
+                    res.render('task_form', { title: 'Create Task', caseobj_list: caseobj, selected_caseobj: task.caseobj._id , errors: errors.array(), task: task });
+            });
+            return;
+        }
+        else {
+            // Data from form is valid.
+            task.save(function (err) {
+                if (err) { return next(err); }
+                   // Successful - redirect to new record.
+                   res.redirect(task.url);
+                });
+        }
+    }
+];
 
 // Display task delete form on GET.
 exports.task_delete_get = function(req, res) {

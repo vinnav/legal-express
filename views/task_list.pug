@@ -2,22 +2,29 @@ extends layout
 
 block content
   h1= title
-
+  - task_list.sort(function(a,b){return a.due - b.due;});
   ul
-    each task in task_list    
-      li
-        if task.status=='Done'
+    each task in task_list 
+      if task.status!='Done'  
+        li
+          if task.status=='Ongoing'
+            span.text-warning #{task.status} - 
+          else if task.status=='To do'
+            span.text-danger #{task.status} - 
+          else if task.status=='Maintenance'
+            span.text-secondary #{task.status} -   
+          if task.status!='Done'
+            span.text-danger #{task.due_formatted} - 
+          a(href=task.url) #{task.description}
+          |  - 
+          a(href=task.caseobj.url) #{task.caseobj.name}
+    each task in task_list
+      if task.status=='Done' 
+        li
           span.text-success #{task.status} - 
-        else if task.status=='Ongoing'
-          span.text-warning #{task.status} - 
-        else if task.status=='To do'
-          span.text-danger #{task.status} - 
-        if task.status!='Done'
-          span.text-danger #{task.due_formatted} - 
-        a(href=task.url) #{task.description}
-        |  - 
-        a(href=task.caseobj.url) #{task.caseobj.name}
-        if task.status!='Done'
+          a(href=task.url) #{task.description}
+          |  - 
+          a(href=task.caseobj.url) #{task.caseobj.name}
 
     else
       li There are no tasks.

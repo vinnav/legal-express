@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1 #{title}
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='first_name') First Name:
+      input#first_name.form-control(type='text',  name='first_name' required='true' value=(undefined===person ? '' : person.first_name))
+      label(for='last_name') Last Name:
+      input#last_name.form-control(type='text',  name='last_name' required='true' value=(undefined===person ? '' : person.last_name))
+      label(for='contact_phone') Contact Phone:
+      input#contact_phone.form-control(type='text',  name='contact_phone' value=(undefined===person ? '' : person.contact_phone))
+      label(for='contact_mail') Contact Mail:
+      input#contact_mail.form-control(type='text',  name='contact_mail' value=(undefined===person ? '' : person.contact_mail))
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors 
+   ul
+    for error in errors
+     li!= error.msg

@@ -7,7 +7,7 @@ var TaskSchema = new Schema(
   {
     caseobj: { type: Schema.Types.ObjectId, ref: 'Caseobj', required: true }, //reference to the associated book
     description: {type: String, required: true},
-    status: {type: String, required: true, enum: ['To do', 'Ongoing', 'Done', 'Maintenance'], default: 'Maintenance'},
+    status: {type: String, required: true, enum: {values: ['To do', 'Ongoing', 'Done', 'Maintenance'], message: 'Status is required.'}, default: 'Maintenance'},
     due: {type: Date, default: Date.now}
   }
 );

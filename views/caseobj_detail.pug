@@ -6,7 +6,13 @@ block content
   p #[strong Client:] 
     a(href=caseobj.client.url) #{caseobj.client.name}
   p #[strong Practice Area:] 
-    a(href=caseobj.practicearea.url) #{caseobj.practicearea.name} 
+    a(href=caseobj.practicearea.url) #{caseobj.practicearea.name}
+  p #[strong Jurisdiction:] #{caseobj.jurisdiction}
+  p #[strong Status:] 
+    if caseobj.status == 'Ongoing'
+      span.text-success #{caseobj.status}
+    else
+      span.text-danger #{caseobj.status}
   p #[strong Parties:] 
     a(href=caseobj.claimant.url) #{caseobj.claimant.name}
     |  v. 

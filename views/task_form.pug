@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  h1=title
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='caseobj') Case:
+      select#caseobj.form-control(type='select' placeholder='Select case' name='caseobj' required='true')
+        - caseobj_list.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for caseobj in caseobj_list
+          if task
+            option(value=caseobj._id selected=(task.caseobj.toString()==caseobj._id.toString() ? 'selected' : false)) #{caseobj.name}
+          else
+            option(value=caseobj._id) #{caseobj.name} - #{caseobj.client.name}       
+    div.form-group
+      label(for='description') Description:
+      input#description.form-control(type='textarea' name='description' required='true' value=(undefined===task ? '' : task.description))
+    div.form-group
+      label(for='due') Due date:
+      input#due.form-control(type='date' name='due' value=(undefined===task ? '' : task.due))            
+    div.form-group
+      label(for='status') Status:
+      select#status.form-control(type='select' placeholder='Select status' name='status' required='true')
+        option(value='To do') To Do
+        option(value='Ongoing') Ongoing
+        option(value='Done') Done
+        option(value='Maintenance') Maintenance
+
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg
