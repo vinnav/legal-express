@@ -11,7 +11,6 @@ var manageRouter = require('./routes/manage')
 var app = express();
 
 //Set up mongoose connection
-//TO DO set up environment variable
 var mongoose = require('mongoose');
 var mongoDB = "mongodb+srv://vinnav:fg8nzx846@cluster0.nw3es.mongodb.net/legalexpress?retryWrites=true&w=majority"
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
