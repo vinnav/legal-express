@@ -84,13 +84,28 @@ exports.task_create_post = [
 ];
 
 // Display task delete form on GET.
-exports.task_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: task delete GET');
-};
+exports.task_delete_get = function(req, res) {    
+    Task.findById(req.params.id)
+    .populate('caseobj')
+    .exec(function (err, task) {
+      if (err) { return next(err); }
+      // Successful, so render.
+      res.render('task_delete', { title: 'Delete Task: ', task: task});
+    });
+}
 
 // Handle task delete on POST.
 exports.task_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: task delete POST');
+    Task.findById(req.body.taskid)
+    .exec(function (err, task) {
+        if (err) { return next(err); }
+        // Delete object and redirect to page.
+        Task.findByIdAndRemove(req.body.taskid, function deleteTask(err){
+        if(err){return next(err);}
+        //Success, go to person list
+        res.redirect('/manage/tasks')
+        })
+        });
 };
 
 // Display task update form on GET.

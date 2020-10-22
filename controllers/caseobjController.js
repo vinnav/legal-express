@@ -140,13 +140,50 @@ exports.caseobj_create_post = [
 ];
 
 // Display caseobj delete form on GET.
-exports.caseobj_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: caseobj delete GET');
+exports.caseobj_delete_get = function(req, res, next) {
+    async.parallel({
+        caseobj: function(callback){
+            Caseobj.findById(req.params.id).exec(callback)
+        },
+        caseobj_task: function(callback){
+            Task.find({'caseobj':req.params.id}).exec(callback)
+        },
+    }, function(err, results){
+            if(err){return next(err);}
+            if(results.caseobj==null){ // No results.
+                res.redirect('/manage/casesobj')
+            }
+            //Successful, so render
+            res.render('caseobj_delete', {title: 'Delete Case', caseobj: results.caseobj, caseobj_task: results.caseobj_task});
+    })
 };
 
 // Handle caseobj delete on POST.
-exports.caseobj_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: caseobj delete POST');
+exports.caseobj_delete_post = function(req, res, next) {
+    async.parallel({
+        caseobj: function(callback){
+            Caseobj.findById(req.body.caseobjid).exec(callback)
+        },
+        caseobj_task: function(callback){
+            Task.find({'caseobj':req.body.caseobjid}).exec(callback)
+        },
+        }, function(err,results){
+            if(err){return next(err);}
+            //Success
+            if(results.caseobj_task.length > 0) {
+                //Caseobj has tasks. Render in some way as for GET route
+                res.render('caseobj_delete', {title:'Delete Case', caseobj: results.caseobj, caseobj_task: results.caseobj_task});
+                return;
+            }
+            else {
+                // caseobj has no cases. Delete object and redirect to list of caseobjs.
+                Caseobj.findByIdAndRemove(req.body.caseobjid, function deleteCaseobj(err){
+                    if(err){return next(err);}
+                    //Success, go to caseobj list
+                    res.redirect('/manage/casesobj')
+                })
+            }
+    });
 };
 
 // Display caseobj update form on GET.

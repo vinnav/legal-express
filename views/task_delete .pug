@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1 #{title} #{task.description}
+  a(href=task.caseobj.url) #{task.caseobj.name}
+
+  p Do you really want to delete this Task?
+    
+    form(method='POST' action='')
+      div.form-group
+        input#taskid.form-control(type='hidden',name='taskid', required='true', value=task._id )
+
+      button.btn.btn-primary(type='submit') Delete

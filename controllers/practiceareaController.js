@@ -96,12 +96,50 @@ exports.practicearea_create_post =   [
 
 // Display practicearea delete form on GET.
 exports.practicearea_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: practice area delete GET');
+    async.parallel({
+        practicearea: function(callback){
+            Practicearea.findById(req.params.id).exec(callback)
+        },
+        practicearea_caseobj: function(callback){
+            Caseobj.find({'practicearea':req.params.id}, 'name summary').exec(callback)
+        },
+    }, function(err, results){
+            if(err){return next(err);}
+            if(results.practicearea==null){ // No results.
+                res.redirect('/manage/practiceareas')
+            }
+            //Successful, so render
+            res.render('practicearea_delete', {title: 'Delete Practice Area', practicearea: results.practicearea, practicearea_caseobj: results.practicearea_caseobj});
+    })
 };
 
 // Handle practicearea delete on POST.
 exports.practicearea_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: practice area delete POST');
+   
+    async.parallel({
+        practicearea: function(callback){
+            Practicearea.findById(req.body.practiceareaid).exec(callback)
+        },
+        practicearea_caseobj: function(callback){
+            Caseobj.find({'practicearea':req.body.practiceareaid}).exec(callback)
+        },
+        }, function(err,results){
+            if(err){return next(err);}
+            //Success
+            if(results.practicearea_caseobj.length > 0) {
+                //practicearea has cases. Render in some way as for GET route
+                res.render('practicearea_delete', {title:'Delete practicearea', practicearea: results.practicearea, practicearea_caseobj: results.practicearea_caseobj});
+                return;
+            }
+            else {
+                // practicearea has no cases. Delete object and redirect to list of practiceareas.
+                Practicearea.findByIdAndRemove(req.body.practiceareaid, function deletepracticearea(err){
+                    if(err){return next(err);}
+                    //Success, go to practicearea list
+                    res.redirect('/manage/practiceareas')
+                })
+            }
+    });
 };
 
 // Display practicearea update form on GET.

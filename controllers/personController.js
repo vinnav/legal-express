@@ -85,13 +85,51 @@ exports.person_create_post = [
 
 
 // Display person delete form on GET.
-exports.person_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: person delete GET');
+exports.person_delete_get = function(req, res, next) {
+    async.parallel({
+        person: function(callback){
+            Person.findById(req.params.id).exec(callback)
+        },
+        person_caseobj: function(callback){
+            Caseobj.find({$or:[{'client':req.params.id},{'lawyer':req.params.id},{'claimant':req.params.id},{'defendant':req.params.id}]}, 'name summary').exec(callback)
+        },
+    }, function(err, results){
+            if(err){return next(err);}
+            if(results.person==null){ // No results.
+                res.redirect('/manage/persons')
+            }
+            //Successful, so render
+            res.render('person_delete', {title: 'Delete Person', person: results.person, person_caseobj: results.person_caseobj});
+    })
 };
 
 // Handle person delete on POST.
-exports.person_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: person delete POST');
+exports.person_delete_post = function(req, res, next) {
+    
+    async.parallel({
+        person: function(callback){
+            Person.findById(req.body.personid).exec(callback)
+        },
+        person_caseobj: function(callback){
+            Caseobj.find({$or:[{'client':req.body.personid},{'lawyer':req.body.personid},{'claimant':req.body.personid},{'defendant':req.body.personid}]}).exec(callback)
+        },
+        }, function(err,results){
+            if(err){return next(err);}
+            //Success
+            if(results.person_caseobj.length > 0) {
+                //Person has cases. Render in some way as for GET route
+                res.render('person_delete', {title:'Delete Person', person: results.person, person_caseobj: results.person_caseobj});
+                return;
+            }
+            else {
+                // Person has no cases. Delete object and redirect to list of persons.
+                Person.findByIdAndRemove(req.body.personid, function deletePerson(err){
+                    if(err){return next(err);}
+                    //Success, go to person list
+                    res.redirect('/manage/persons')
+                })
+            }
+    });
 };
 
 // Display person update form on GET.

@@ -16,15 +16,17 @@ block content
           if task.status!='Done'
             span.text-danger #{task.due_formatted} - 
           a(href=task.url) #{task.description}
-          |  - 
-          a(href=task.caseobj.url) #{task.caseobj.name}
+          if task.caseobj!=null
+            |  - 
+            a(href=task.caseobj.url) #{task.caseobj.name}
     each task in task_list
       if task.status=='Done' 
         li
           span.text-success #{task.status} - 
           a(href=task.url) #{task.description}
           |  - 
-          a(href=task.caseobj.url) #{task.caseobj.name}
+          if task.caseobj!=null
+            a(href=task.caseobj.url) #{task.caseobj.name}
 
     else
       li There are no tasks.

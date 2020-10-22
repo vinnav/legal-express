@@ -4,7 +4,10 @@ block content
   h2= task.description
   div(style='margin-left:20px;margin-top:20px')
     p #[strong Case:] 
-      a(href=task.caseobj.url) #{task.caseobj.name}
+      if task.caseobj!=null
+        a(href=task.caseobj.url) #{task.caseobj.name}
+      else
+        span No case assigned
     p #[strong Status:] 
       if task.status=='Done'
         span.text-success #{task.status}
@@ -14,3 +17,6 @@ block content
         span.text-danger #{task.status} - 
       if task.status!='Done'
         span.text-danger #{task.due_formatted}
+    hr
+    p
+      a(href=task.url+'/delete') Delete task
