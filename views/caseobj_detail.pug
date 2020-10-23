@@ -35,8 +35,15 @@ block content
         a(href=task.url) #{task.description}
     else
         li There are no tasks.
+    div(style='margin-left:20px;margin-top:20px')
+    h4 Documents
+    for file in caseobj.docs
+      li
+        a(href="../../download/"+file[0] download) #{file[1]} 
     hr
     p
       a(href=caseobj.url+'/delete') Delete Case
     p
       a(href=caseobj.url+'/update') Update Case
+    p
+      a(href=caseobj.url+'/upload') Upload File
