@@ -14,6 +14,7 @@ var CaseobjSchema = new Schema(
     lawyer: {type: Schema.Types.ObjectId, ref: 'Person'},
     summary: {type: String},
     task: {type: Schema.Types.ObjectId, ref: 'Task'},
+    docs: {type: Array}
   }
 );
 

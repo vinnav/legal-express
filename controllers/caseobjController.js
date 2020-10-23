@@ -266,3 +266,33 @@ exports.caseobj_update_post = [
         }
     },
 ];
+// Handle caseobj upload on GET.
+exports.caseobj_upload_get = function(req, res, next) {
+    Caseobj.findById(req.params.id)
+    .exec(function (err, caseobj) {
+        if (err) { return next(err); }
+        // Successful, so render.
+        res.render('caseobj_upload', {title: 'Upload file', caseobj: caseobj});
+      });    
+  };
+
+// Handle caseobj upload on POST.
+exports.caseobj_upload_post = function(req, res, next) {
+    Caseobj.findById(req.params.id)
+    .exec(function (err, caseobj) {
+        if (err) { return next(err); }
+        // Successful, so render.
+        let file = req.file;
+        console.log(file);
+        let docsarray = caseobj.docs;
+        docsarray.push(["../download/"+file.filename, file.originalname, file.mimetype]);
+        console.log(docsarray);
+        Caseobj.findByIdAndUpdate(req.params.id,{"docs": docsarray},{upsert: true}, function(err, result){
+            if(err){
+                res.send(err)
+            }
+            else{
+                res.render('caseobj_upload', {title: 'File uploaded, upload new file', caseobj: caseobj});}
+            });              
+      });    
+  };

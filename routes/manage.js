@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var multer  = require('multer')
+var upload = multer({ dest: 'public/download/' })
 
 // Require controller modules.
 var caseobj_controller = require('../controllers/caseobjController');
@@ -29,6 +31,15 @@ router.get('/caseobj/:id/update', caseobj_controller.caseobj_update_get);
 
 // POST request to update caseobj.
 router.post('/caseobj/:id/update', caseobj_controller.caseobj_update_post);
+
+// Get request to upload document to caseobj.
+router.get('/caseobj/:id/upload', caseobj_controller.caseobj_upload_get);
+
+// POST request to upload document to caseobj.
+router.post('/caseobj/:id/upload', upload.single('document'), caseobj_controller.caseobj_upload_post);
+
+// Get request to download document from caseobj.
+//router.get('/caseobj/:id/download', caseobj_controller.caseobj_download_get);
 
 // GET request for one caseobj.
 router.get('/caseobj/:id', caseobj_controller.caseobj_detail);
