@@ -18,7 +18,7 @@ block content
       input#description.form-control(type='textarea' name='description' required='true' value=(undefined===task ? '' : task.description))
     div.form-group
       label(for='due') Due date:
-      input#due.form-control(type='date' name='due' value=(undefined===task ? '' : task.due))            
+      input#due.form-control(type='date' name='due' required='true' value=(undefined===task ? '' : task.due))            
     div.form-group
       label(for='status') Status:
       select#status.form-control(type='select' placeholder='Select status' name='status' required='true')
