@@ -143,11 +143,49 @@ exports.practicearea_delete_post = function(req, res) {
 };
 
 // Display practicearea update form on GET.
-exports.practicearea_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: practice area update GET');
+exports.practicearea_update_get = function(req, res, next) {
+    Practicearea.findById(req.params.id)
+        .exec(function(err, practicearea){
+            if(err){return next(err);}
+            //Successful, so render
+            res.render('practicearea_form', {title: 'Update practice area', practicearea: practicearea});
+        })
+    
 };
 
+
 // Handle practicearea update on POST.
-exports.practicearea_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: practice area update POST');
-};
+exports.practicearea_update_post = [
+   
+    // Validate and sanitise the name field.
+    body('name', 'Practice area name required').trim().isLength({ min: 1 }).escape(),
+  
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+  
+          // Extract the validation errors from a request.
+        const errors = validationResult(req);
+
+        // Create a genre object with escaped and trimmed data.
+        var practicearea = new Practicearea(
+        { 
+            name: req.body.name,
+            _id:req.params.id  
+        }
+        );
+
+  
+        if (!errors.isEmpty()) {
+            // There are errors. Render the form again with sanitized values/error messages.
+            res.render('practicearea_form', { title: 'Update practice area', practicearea: practicearea, errors: errors.array()});
+            return;
+        }
+        else {
+            Practicearea.findByIdAndUpdate(req.params.id, practicearea, {}, function(err, thepracticearea){
+            if(err){return next(err);}
+            //Successful - redirect to new caseobj record
+            res.redirect(thepracticearea.url);
+            });
+        }
+    },
+];

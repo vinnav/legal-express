@@ -13,7 +13,7 @@ block content
         - persons.sort(function(a, b) {let textA = a.last_name.toUpperCase(); let textB = b.last_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for person in persons
           if caseobj
-            option(value=person._id selected=(person._id.toString()==caseobj.person ? 'selected' : false) ) #{person.name}
+            option(value=person._id selected=(person._id.toString()==caseobj.client._id ? 'selected' : false) ) #{person.name}
           else
             option(value=person._id) #{person.name}
     div.form-group        
@@ -22,7 +22,7 @@ block content
         - practiceareas.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for practicearea in practiceareas
           if caseobj
-            option(value=practicearea._id selected=(practicearea._id.toString()==caseobj.practicearea ? 'selected' : false) ) #{practicearea.name}
+            option(value=practicearea._id selected=(practicearea._id.toString()==caseobj.practicearea._id ? 'selected' : false) ) #{practicearea.name}
           else
             option(value=practicearea._id) #{practicearea.name}
     div.form-group
@@ -31,9 +31,14 @@ block content
     div.form-group        
       label(for='status') Status:
       select#status.form-control(type='select', name='status' required='true' )
-        option(value="Ongoing") Ongoing
-        option(value="Archived") Archived
-        option(value="Maintenance") Maintenance
+        if caseobj
+          option(value="Ongoing" selected=("Ongoing" == caseobj.status ? 'selected' : false)) Ongoing
+          option(value="Archived" selected=("Archived" == caseobj.status ? 'selected' : false)) Archived
+          option(value="Maintenance" selected=("Maintenance" == caseobj.status ? 'selected' : false)) Maintenance
+        else
+          option(value="Ongoing") Ongoing
+          option(value="Archived") Archived
+          option(value="Maintenance") Maintenance
     br
     div.form-group
       label(for='claimant') Claimant:
@@ -41,7 +46,7 @@ block content
         - persons.sort(function(a, b) {let textA = a.last_name.toUpperCase(); let textB = b.last_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for person in persons
           if caseobj
-            option(value=person._id selected=(person._id.toString()==caseobj.person ? 'selected' : false) ) #{person.name}
+            option(value=person._id selected=(person._id.toString()==caseobj.claimant._id ? 'selected' : false) ) #{person.name}
           else
             option(value=person._id) #{person.name}
     div.form-group
@@ -50,7 +55,7 @@ block content
         - persons.sort(function(a, b) {let textA = a.last_name.toUpperCase(); let textB = b.last_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for person in persons
           if caseobj
-            option(value=person._id selected=(person._id.toString()==caseobj.person ? 'selected' : false) ) #{person.name}
+            option(value=person._id selected=(person._id.toString()==caseobj.defendant._id ? 'selected' : false) ) #{person.name}
           else
             option(value=person._id) #{person.name}
     div.form-group
@@ -59,7 +64,7 @@ block content
         - persons.sort(function(a, b) {let textA = a.last_name.toUpperCase(); let textB = b.last_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for person in persons
           if caseobj
-            option(value=person._id selected=(person._id.toString()==caseobj.person ? 'selected' : false) ) #{person.name}
+            option(value=person._id selected=(person._id.toString()==caseobj.lawyer._id ? 'selected' : false) ) #{person.name}
           else
             option(value=person._id) #{person.name}
     br

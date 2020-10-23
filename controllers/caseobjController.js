@@ -187,11 +187,82 @@ exports.caseobj_delete_post = function(req, res, next) {
 };
 
 // Display caseobj update form on GET.
-exports.caseobj_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: caseobj update GET');
+exports.caseobj_update_get = function(req, res, next) {
+    // Get book, authors and genres for form.
+    async.parallel({
+        caseobj: function(callback) {
+            Caseobj.findById(req.params.id).populate('client').populate('practicearea').populate('claimant')
+            .populate('defendant').populate('lawyer').exec(callback);
+        },
+        persons: function(callback){
+            Person.find(callback);
+        },
+        practiceareas: function(callback){
+            Practicearea.find(callback);
+        },
+    }, function(err,results){
+        if(err){return next(err);}
+        if (results.caseobj==null) { // No results.
+                var err = new Error('Case not found');
+                err.status = 404;
+                return next(err);}
+        // Success.
+        res.render('caseobj_form', {title: 'Create Case', persons: results.persons, practiceareas: results.practiceareas, caseobj: results.caseobj});
+        });
 };
 
 // Handle caseobj update on POST.
-exports.caseobj_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: caseobj update POST');
-};
+exports.caseobj_update_post = [
+    //Validate and sanitise fields
+    body('name', 'Name must not be empty').trim().isLength({min:1}).escape(),
+    body('client', 'Client must not be empty').trim().isLength({min:1}).escape(),
+    body('practicearea', 'Practice area must not be empty').trim().isLength({min:1}).escape(),
+    body('jurisdiction', 'Jurisdiction must not be empty').trim().isLength({min:1}).escape(),
+    body('status', 'Status must not be empty').trim().isLength({min:1}).escape(),
+    
+    //Process request after validation and sanitization
+    (req, res, next) => {
+
+        //Extract the validation errors from a request
+        const errors = validationResult(req);
+
+        //Create a caseobj with escaped and trimmed data.
+        var caseobj = new Caseobj({
+            name: req.body.name,
+            client: req.body.client,
+            practicearea: req.body.practicearea,
+            jurisdiction: req.body.jurisdiction,
+            status: req.body.status,
+            claimant: req.body.claimant,
+            defendant: req.body.defendant,
+            lawyer: req.body.lawyer,
+            summary: req.body.summary,
+            _id:req.params.id
+            });
+        if(!errors.isEmpty()){
+            //There are errors. Render form again with sanitised values/error messages.
+
+            //Get all the person and practicearea for form.
+            async.parallel({
+                persons: function(callback){
+                    Person.find(callback);
+                },
+                practiceareas: function(callback){
+                    Practicearea.find(callback)
+                },
+            }, function(err, results){
+                if(err){return next(err);}
+                res.render('caseobj_form', {title: 'Create Case', persons: results.persons, practiceareas: results.practiceareas, caseobj: caseobj, errors: errors.array()});
+            });
+            return
+        }
+        else {
+            //Data from form is valid. Save case.
+            Caseobj.findByIdAndUpdate(req.params.id, caseobj, {}, function(err, thecaseobj){
+                if(err){return next(err);}
+                //Successful - redirect to new caseobj record
+                res.redirect(thecaseobj.url);
+            });
+        }
+    },
+];
