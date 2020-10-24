@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const multer = require('multer');
+require('dotenv').config()
 
 
 var indexRouter = require('./routes/index');
@@ -14,7 +15,7 @@ var app = express();
 
 //Set up mongoose connection
 var mongoose = require('mongoose');
-var mongoDB = "mongodb+srv://vinnav:fg8nzx846@cluster0.nw3es.mongodb.net/legalexpress?retryWrites=true&w=majority"
+var mongoDB = process.env.DB_HOST
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
